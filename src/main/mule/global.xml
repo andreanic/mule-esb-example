@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+		<http:listener-config name="HttpGenericListener" doc:name="HTTP Listener config" doc:id="21ea75c0-6e0c-4f0c-b819-6537292e8cca" basePath="/" rejectInvalidTransferEncoding="true" >
+			<http:listener-connection host="${http.listener.host}" port="${http.listener.port}" />
+		</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="d2dc4323-ac1b-45b0-92f8-62c0970af136" file="application.properties" />
+	<jms:config name="HelloWorld_JMSConfig" doc:name="JMS Config" doc:id="1c58c248-c59f-42b2-aa7f-b7cf539150b4" >
+		<jms:active-mq-connection />
+	</jms:config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="5b6bc9cc-cef2-47d9-acc0-2281a7bb0939" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+</mule>

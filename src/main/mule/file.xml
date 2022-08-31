@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="fileFlow" doc:id="4610cf02-b54c-4be0-aae1-83f4581d383e" >
+		<http:listener doc:name="Listener" doc:id="45cae667-5ebe-4474-a9db-b206de52bde5" config-ref="HttpGenericListener" path="/file/{filename}" allowedMethods="GET"/>
+		<file:read doc:name="Read" doc:id="46ead884-f198-4bf3-ba5b-c6acb99cf976" path='#["C:/Users/Andre/AnypointStudio/studio-workspace/helloworld/src/main/resources/files/" ++ attributes.uriParams.filename as String ++ ".txt"]'/>
+		<ee:transform doc:name="Transform Message" doc:id="b20ae346-85af-45ae-b6bc-f9a52e689c8f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status: 200,
+	message: payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="fileFlow1" doc:id="f16cedeb-daeb-431c-a88e-8d431cc3fe0a" >
+		<http:listener doc:name="Listener" doc:id="fefb332d-c14a-45b8-8c1c-8131b94c3d5f" config-ref="HttpGenericListener" path="/file/{filename}" allowedMethods="POST"/>
+		<file:write doc:name="Write" doc:id="c89e9844-93a8-4d30-a223-505fe3dec334" path='#["C:/Users/Andre/AnypointStudio/studio-workspace/helloworld/src/main/resources/files/" ++ attributes.uriParams.filename as String ++ ".txt"]'>
+			<file:content ><![CDATA[#[output text/plain
+---
+payload.message as String]]]></file:content>
+		</file:write>
+	</flow>
+</mule>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+		<flow name="JMS_PublishFlow" doc:id="1ed36320-d2f7-4ba7-9f68-3d359b7c3f25" >
+		<http:listener doc:name="Listener" doc:id="cf9b73fb-3fdc-4e9b-b29b-35334fdb4316" config-ref="HttpGenericListener" path="/jms/print"/>
+		<ee:transform doc:name="Transform Message" doc:id="842fa137-34f5-4bd2-9d04-58e76ac2a970">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": payload.message
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<jms:publish doc:name="Publish" doc:id="90782a14-f1f7-48ad-8292-0d8d46785cb4" config-ref="HelloWorld_JMSConfig" destination="helloworld"/>
+		<ee:transform doc:name="Transform Response Message" doc:id="65a8557c-ff90-45a8-8433-5bb29e360efb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Messaggio inserito in coda",
+	status: 200
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	
+</flow>
+	<flow name="JMS_ConsumeFlow" doc:id="4035203b-09d1-43d9-ac30-0781edb459d6" >
+		<jms:listener doc:name="On New Message" doc:id="ad346466-3b73-4854-94a4-cb375066377b" config-ref="HelloWorld_JMSConfig" destination="helloworld" ackMode="AUTO">
+			<jms:consumer-type >
+				<jms:queue-consumer />
+			</jms:consumer-type>
+		</jms:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="7ee9e085-3cfc-4be9-9c0b-2cbb079a61e5" message='#[output application/java&#10;---&#10;"Messaggio ricevuto: " ++ payload.message]' />
+	
+</flow>
+</mule>
